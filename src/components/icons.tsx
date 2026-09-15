@@ -79,6 +79,25 @@ export function XIcon({ className }: IconProps) {
   );
 }
 
+export function CameraIcon({ className }: IconProps) {
+  return (
+    <svg className={className} {...base}>
+      <path d="M9 7l1.2-2h3.6L15 7h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h3z" />
+      <circle cx="12" cy="13" r="3.5" />
+    </svg>
+  );
+}
+
+export function ImageIcon({ className }: IconProps) {
+  return (
+    <svg className={className} {...base}>
+      <rect x="3.5" y="4.5" width="17" height="15" rx="2" />
+      <circle cx="9" cy="10" r="1.6" fill="currentColor" stroke="none" />
+      <path d="M4.5 16.5l5-5 3.5 3.5 2.5-2.5 4.5 4.5" />
+    </svg>
+  );
+}
+
 export function ClapperIcon({ className }: IconProps) {
   return (
     <svg className={className} {...base}>

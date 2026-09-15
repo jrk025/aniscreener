@@ -47,7 +47,7 @@ export default function ResultPanel({ result }: { result: IdentifyResponse }) {
 
         <div>
           <p className="mb-2 text-xs uppercase tracking-wide text-muted">Appears in</p>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {result.anime.map((anime) => (
               <AnimeCard key={anime.id} anime={anime} />
             ))}

@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import type { IdentifyResponse } from "@/lib/types";
 import ResultPanel from "@/components/ResultPanel";
-import { UploadIcon, XIcon } from "@/components/icons";
+import { CameraIcon, ImageIcon, UploadIcon, XIcon } from "@/components/icons";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
@@ -14,7 +14,8 @@ export default function Screener() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<IdentifyResponse | null>(null);
   const [localError, setLocalError] = useState<string | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   function selectFile(candidate: File) {
     if (!candidate.type.startsWith("image/")) {
@@ -36,7 +37,8 @@ export default function Screener() {
     setPreviewUrl(null);
     setResult(null);
     setLocalError(null);
-    if (inputRef.current) inputRef.current.value = "";
+    if (galleryInputRef.current) galleryInputRef.current.value = "";
+    if (cameraInputRef.current) cameraInputRef.current.value = "";
   }
 
   async function identify() {
@@ -63,8 +65,8 @@ export default function Screener() {
       <div
         role="button"
         tabIndex={0}
-        onClick={() => inputRef.current?.click()}
-        onKeyDown={(e) => e.key === "Enter" && inputRef.current?.click()}
+        onClick={() => galleryInputRef.current?.click()}
+        onKeyDown={(e) => e.key === "Enter" && galleryInputRef.current?.click()}
         onDragOver={(e) => {
           e.preventDefault();
           setIsDragging(true);
@@ -81,9 +83,20 @@ export default function Screener() {
         }`}
       >
         <input
-          ref={inputRef}
+          ref={galleryInputRef}
           type="file"
           accept="image/*"
+          className="hidden"
+          onChange={(e) => {
+            const chosen = e.target.files?.[0];
+            if (chosen) selectFile(chosen);
+          }}
+        />
+        <input
+          ref={cameraInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
           className="hidden"
           onChange={(e) => {
             const chosen = e.target.files?.[0];
@@ -102,11 +115,32 @@ export default function Screener() {
           <>
             <UploadIcon className="h-8 w-8 text-muted" />
             <div>
-              <p className="text-lg font-medium">Drop an anime character image here</p>
-              <p className="text-sm text-muted">or click to browse — PNG, JPG, WebP up to 10MB</p>
+              <p className="hidden text-lg font-medium sm:block">Drop an anime character image here</p>
+              <p className="text-lg font-medium sm:hidden">Add a photo of a character</p>
+              <p className="hidden text-sm text-muted sm:block">or click to browse — PNG, JPG, WebP up to 10MB</p>
+              <p className="text-sm text-muted sm:hidden">use the buttons below — up to 10MB</p>
             </div>
           </>
         )}
+      </div>
+
+      <div className="flex gap-3 sm:hidden">
+        <button
+          type="button"
+          onClick={() => cameraInputRef.current?.click()}
+          className="flex flex-1 items-center justify-center gap-2 rounded-full border border-border py-3 text-sm font-medium transition-colors active:bg-surface"
+        >
+          <CameraIcon className="h-4 w-4" />
+          Take a photo
+        </button>
+        <button
+          type="button"
+          onClick={() => galleryInputRef.current?.click()}
+          className="flex flex-1 items-center justify-center gap-2 rounded-full border border-border py-3 text-sm font-medium transition-colors active:bg-surface"
+        >
+          <ImageIcon className="h-4 w-4" />
+          From gallery
+        </button>
       </div>
 
       {localError && <p className="text-sm text-red-400">{localError}</p>}
