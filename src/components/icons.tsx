@@ -98,6 +98,24 @@ export function ImageIcon({ className }: IconProps) {
   );
 }
 
+export function HeartIcon({ className, filled }: IconProps & { filled?: boolean }) {
+  return (
+    <svg className={className} {...base} fill={filled ? "currentColor" : "none"}>
+      <path d="M12 20.5s-7.5-4.6-9.8-9.4C.8 7.7 2.3 4.5 5.6 3.7c2-.5 3.9.3 5 1.9l1.4 2 1.4-2c1.1-1.6 3-2.4 5-1.9 3.3.8 4.8 4 3.4 7.4-2.3 4.8-9.8 9.4-9.8 9.4Z" />
+    </svg>
+  );
+}
+
+export function FilterIcon({ className }: IconProps) {
+  return (
+    <svg className={className} {...base}>
+      <path d="M4 6h16" />
+      <path d="M7 12h10" />
+      <path d="M10 18h4" />
+    </svg>
+  );
+}
+
 export function ClapperIcon({ className }: IconProps) {
   return (
     <svg className={className} {...base}>

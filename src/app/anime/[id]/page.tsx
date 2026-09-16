@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAnimeById } from "@/lib/anilist";
+import { titleCaseFromEnum } from "@/lib/text";
 import { ArrowLeftIcon, ExternalLinkIcon, SparkleIcon } from "@/components/icons";
+import FavoriteButton from "@/components/FavoriteButton";
+
+export const revalidate = 3600;
 
 async function loadAnime(id: string) {
   const animeId = Number(id);
@@ -36,7 +40,7 @@ export default async function AnimeDetailPage(props: PageProps<"/anime/[id]">) {
     anime.format,
     anime.episodes ? `${anime.episodes} episodes` : null,
     anime.duration ? `${anime.duration} min` : null,
-    anime.status ? STATUS_LABELS[anime.status] ?? anime.status : null,
+    anime.status ? STATUS_LABELS[anime.status] ?? titleCaseFromEnum(anime.status) : null,
     anime.year,
     anime.studios[0],
   ].filter(Boolean);
@@ -51,13 +55,16 @@ export default async function AnimeDetailPage(props: PageProps<"/anime/[id]">) {
       </div>
 
       {anime.bannerImage && (
-        <div className="mt-4 h-48 w-full overflow-hidden sm:h-64">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={anime.bannerImage} alt="" className="h-full w-full object-cover opacity-60" />
+        <div className="mx-auto mt-4 w-full max-w-5xl px-4">
+          <div className="relative h-40 w-full overflow-hidden rounded-2xl sm:h-56">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={anime.bannerImage} alt="" className="h-full w-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/10 to-transparent" />
+          </div>
         </div>
       )}
 
-      <div className={`mx-auto w-full max-w-5xl px-4 ${anime.bannerImage ? "-mt-16" : "mt-6"}`}>
+      <div className="mx-auto mt-6 w-full max-w-5xl px-4">
         <div className="flex flex-col gap-6 sm:flex-row">
           {anime.coverImage ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -69,7 +76,14 @@ export default async function AnimeDetailPage(props: PageProps<"/anime/[id]">) {
           ) : null}
 
           <div className="min-w-0 flex-1 pt-2">
-            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{anime.title}</h1>
+            <div className="flex items-start justify-between gap-3">
+              <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{anime.title}</h1>
+              <FavoriteButton
+                anime={anime}
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border text-foreground/80 transition-colors hover:text-accent"
+                iconClassName="h-4 w-4"
+              />
+            </div>
             {anime.titleNative && <p className="mt-1 text-muted">{anime.titleNative}</p>}
 
             <p className="mt-3 text-sm text-muted">{meta.join(" · ")}</p>
@@ -107,7 +121,7 @@ export default async function AnimeDetailPage(props: PageProps<"/anime/[id]">) {
         )}
 
         {anime.characters.length > 0 && (
-          <div className="mt-10 mb-12">
+          <div className="mt-10">
             <h2 className="mb-3 text-xs uppercase tracking-wide text-muted">Characters</h2>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
               {anime.characters.map((character) => (
@@ -120,6 +134,7 @@ export default async function AnimeDetailPage(props: PageProps<"/anime/[id]">) {
                     <img
                       src={character.image}
                       alt=""
+                      loading="lazy"
                       className="h-12 w-12 shrink-0 rounded-full object-cover"
                     />
                   ) : (
@@ -130,6 +145,39 @@ export default async function AnimeDetailPage(props: PageProps<"/anime/[id]">) {
                     <p className="text-xs text-muted">{character.role === "MAIN" ? "Main" : "Supporting"}</p>
                   </div>
                 </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {anime.relations.length > 0 && (
+          <div className="mt-10 mb-12">
+            <h2 className="mb-3 text-xs uppercase tracking-wide text-muted">Related</h2>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+              {anime.relations.slice(0, 8).map((relation) => (
+                <Link
+                  key={relation.id}
+                  href={`/anime/${relation.id}`}
+                  className="group overflow-hidden rounded-xl border border-border bg-surface transition-colors hover:border-accent/50"
+                >
+                  {relation.coverImage ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={relation.coverImage}
+                      alt=""
+                      loading="lazy"
+                      className="h-32 w-full object-cover"
+                    />
+                  ) : (
+                    <div className="h-32 w-full bg-border" />
+                  )}
+                  <div className="p-2.5">
+                    <p className="truncate text-xs uppercase tracking-wide text-muted">
+                      {titleCaseFromEnum(relation.relationType)}
+                    </p>
+                    <p className="truncate text-sm font-medium group-hover:text-accent">{relation.title}</p>
+                  </div>
+                </Link>
               ))}
             </div>
           </div>

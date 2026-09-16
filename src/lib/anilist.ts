@@ -23,6 +23,14 @@ export interface AnimeCharacter {
   role: string;
 }
 
+export interface AnimeRelation {
+  id: number;
+  title: string;
+  coverImage?: string;
+  format?: string;
+  relationType: string;
+}
+
 export interface AnimeDetail extends AnimeSummary {
   description?: string;
   bannerImage?: string;
@@ -31,6 +39,7 @@ export interface AnimeDetail extends AnimeSummary {
   season?: string;
   studios: string[];
   characters: AnimeCharacter[];
+  relations: AnimeRelation[];
   siteUrl: string;
 }
 
@@ -56,6 +65,12 @@ interface AniListMediaNode {
   description?: string;
   studios?: { nodes: { name: string }[] };
   characters?: { edges: { role: string; node: { id: number; name: { full: string }; image?: { large?: string } } }[] };
+  relations?: {
+    edges: {
+      relationType: string;
+      node: { id: number; type: string; title: { romaji?: string; english?: string }; coverImage?: { large?: string }; format?: string };
+    }[];
+  };
   siteUrl: string;
 }
 
@@ -105,6 +120,16 @@ function toDetail(node: AniListMediaNode): AnimeDetail {
         image: edge.node.image?.large,
         role: edge.role,
       })) ?? [],
+    relations:
+      node.relations?.edges
+        .filter((edge) => edge.node.type === "ANIME")
+        .map((edge) => ({
+          id: edge.node.id,
+          title: edge.node.title.english || edge.node.title.romaji || "Unknown title",
+          coverImage: edge.node.coverImage?.large,
+          format: edge.node.format,
+          relationType: edge.relationType,
+        })) ?? [],
     siteUrl: node.siteUrl,
   };
 }
@@ -171,10 +196,10 @@ export interface AnimeListPage {
 }
 
 const BROWSE_QUERY = `
-query ($search: String, $page: Int, $perPage: Int, $sort: [MediaSort]) {
+query ($search: String, $page: Int, $perPage: Int, $sort: [MediaSort], $genreIn: [String]) {
   Page(page: $page, perPage: $perPage) {
     pageInfo { hasNextPage }
-    media(type: ANIME, search: $search, sort: $sort) {
+    media(type: ANIME, search: $search, sort: $sort, genre_in: $genreIn) {
       ${SUMMARY_FIELDS}
     }
   }
@@ -183,7 +208,8 @@ query ($search: String, $page: Int, $perPage: Int, $sort: [MediaSort]) {
 export async function browseAnime(
   search: string,
   page: number = 1,
-  perPage: number = 24
+  perPage: number = 24,
+  genre?: string
 ): Promise<AnimeListPage> {
   const data = await queryAniList<{
     Page: { pageInfo: { hasNextPage: boolean }; media: AniListMediaNode[] };
@@ -192,6 +218,7 @@ export async function browseAnime(
     page,
     perPage,
     sort: search ? ["SEARCH_MATCH"] : ["POPULARITY_DESC"],
+    genreIn: genre ? [genre] : null,
   });
 
   if (!data) return { results: [], hasNextPage: false };
@@ -213,6 +240,12 @@ query ($id: Int) {
     studios(isMain: true) { nodes { name } }
     characters(sort: [ROLE, RELEVANCE], perPage: 12) {
       edges { role node { id name { full } image { large } } }
+    }
+    relations {
+      edges {
+        relationType(version: 2)
+        node { id type title { romaji english } coverImage { large } format }
+      }
     }
     siteUrl
   }

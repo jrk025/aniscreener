@@ -3,12 +3,21 @@ import { tagImage } from "@/lib/tagger";
 import { normalizeImage, UnsupportedImageError } from "@/lib/image";
 import { findAnimeBySeriesHint, findCharacterAnime } from "@/lib/anilist";
 import { cleanCharacterName, extractSeriesHint } from "@/lib/characterName";
+import { checkDailyLimit, getClientIp } from "@/lib/ratelimit";
 import type { IdentifyResponse } from "@/lib/types";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const MATCH_THRESHOLD = 0.65;
 
 export async function POST(request: Request): Promise<NextResponse<IdentifyResponse>> {
+  const withinLimit = await checkDailyLimit(getClientIp(request));
+  if (!withinLimit) {
+    return NextResponse.json(
+      { status: "error", message: "Daily identification limit reached. Please try again tomorrow." },
+      { status: 429 }
+    );
+  }
+
   let formData: FormData;
   try {
     formData = await request.formData();
