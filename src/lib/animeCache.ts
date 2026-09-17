@@ -30,7 +30,7 @@ function writeCache(cache: Record<string, CacheEntry>) {
       .slice(0, MAX_ENTRIES);
     localStorage.setItem(CACHE_KEY, JSON.stringify(Object.fromEntries(trimmed)));
   } catch {
-    // storage unavailable — cache just won't persist
+    // storage unavailable, cache just won't persist
   }
 }
 
@@ -68,7 +68,7 @@ function writeRecent(list: string[]) {
     cachedRecent = null;
     window.dispatchEvent(new Event(RECENT_CHANGE_EVENT));
   } catch {
-    // storage unavailable — recents just won't persist
+    // storage unavailable, recents just won't persist
   }
 }
 

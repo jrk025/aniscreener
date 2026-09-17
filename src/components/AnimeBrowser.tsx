@@ -196,7 +196,7 @@ export default function AnimeBrowser() {
       {view === "favorites" ? (
         favorites.length === 0 ? (
           <p className="text-sm text-muted">
-            No favorites yet — tap the heart on any anime to save it here. Favorites are stored only in this
+            No favorites yet. Tap the heart on any anime to save it here. Favorites are stored only in this
             browser.
           </p>
         ) : favoriteResults.length === 0 ? (

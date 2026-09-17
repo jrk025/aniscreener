@@ -11,7 +11,7 @@ export default function Home() {
             Identify any anime character
           </h1>
           <p className="max-w-sm text-muted">
-            Upload a picture and find out which anime it&apos;s from — free, instant, no sign-up.
+            Upload a picture and find out which anime it&apos;s from. Free, instant, no sign-up.
           </p>
           <Link
             href="/browse"

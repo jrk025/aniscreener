@@ -41,7 +41,7 @@ export default function ResultPanel({ result }: { result: IdentifyResponse }) {
 
         {!isConfident && (
           <p className="text-sm text-muted">
-            The model isn&apos;t fully certain about this one — take the result with a grain of salt.
+            The model isn&apos;t fully certain about this one, so take the result with a grain of salt.
           </p>
         )}
 

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import AnimeBrowser from "@/components/AnimeBrowser";
 
 export const metadata: Metadata = {
-  title: "Browse anime — AniScreener",
+  title: "Browse anime | AniScreener",
   description: "Search and explore anime, with details on genres, episodes, and cast.",
 };
 

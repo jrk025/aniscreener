@@ -117,8 +117,8 @@ export default function Screener() {
             <div>
               <p className="hidden text-lg font-medium sm:block">Drop an anime character image here</p>
               <p className="text-lg font-medium sm:hidden">Add a photo of a character</p>
-              <p className="hidden text-sm text-muted sm:block">or click to browse — PNG, JPG, WebP up to 10MB</p>
-              <p className="text-sm text-muted sm:hidden">use the buttons below — up to 10MB</p>
+              <p className="hidden text-sm text-muted sm:block">or click to browse: PNG, JPG, WebP up to 10MB</p>
+              <p className="text-sm text-muted sm:hidden">use the buttons below (up to 10MB)</p>
             </div>
           </>
         )}

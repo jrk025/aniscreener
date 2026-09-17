@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { dismissBackupReminder, downloadBackup, shouldShowBackupReminder } from "@/lib/backup";
 import { onFavoritesChange } from "@/lib/favorites";
+import { onWatchListChange } from "@/lib/watchStatus";
 import { XIcon } from "@/components/icons";
 
 export default function BackupReminder() {
@@ -11,7 +12,12 @@ export default function BackupReminder() {
   useEffect(() => {
     const check = () => setVisible(shouldShowBackupReminder());
     check();
-    return onFavoritesChange(check);
+    const unsubscribeFavorites = onFavoritesChange(check);
+    const unsubscribeWatchList = onWatchListChange(check);
+    return () => {
+      unsubscribeFavorites();
+      unsubscribeWatchList();
+    };
   }, []);
 
   if (!visible) return null;
@@ -20,8 +26,8 @@ export default function BackupReminder() {
     <div className="border-b border-border bg-surface px-4 py-3">
       <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-3 text-sm">
         <p className="text-muted">
-          Your favorites only live in this browser — nothing is saved on our servers. Download a backup so
-          clearing your browser data doesn&apos;t lose them.
+          Your favorites and list only live in this browser. Nothing is saved on our servers. Download a
+          backup so clearing your browser data doesn&apos;t lose them.
         </p>
         <div className="flex shrink-0 items-center gap-2">
           <button

@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AniScreener — Identify any anime character",
+  title: "Identify any anime character | AniScreener",
   description:
     "Upload a picture of an anime character and AniScreener tells you which anime it's from, powered by free open-source AI. Browse and search anime too. No sign-up needed.",
 };

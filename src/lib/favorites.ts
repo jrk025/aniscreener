@@ -22,7 +22,7 @@ function writeAll(data: Record<number, AnimeSummary>) {
     cachedSnapshot = null;
     window.dispatchEvent(new Event(CHANGE_EVENT));
   } catch {
-    // storage unavailable (private mode, quota) — favoriting just won't persist
+    // storage unavailable (private mode, quota), favoriting just won't persist
   }
 }
 
@@ -35,8 +35,8 @@ export function onFavoritesChange(handler: () => void): () => void {
   };
 }
 
-// Cached so repeated calls return the same reference between writes —
-// required for useSyncExternalStore to avoid re-render loops.
+// Cached so repeated calls return the same reference between writes.
+// This is required by useSyncExternalStore to avoid re-render loops.
 export function getFavorites(): AnimeSummary[] {
   if (!cachedSnapshot) {
     cachedSnapshot = Object.values(readAll()).sort((a, b) => a.title.localeCompare(b.title));

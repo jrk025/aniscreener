@@ -5,6 +5,7 @@ import { getAnimeById } from "@/lib/anilist";
 import { titleCaseFromEnum } from "@/lib/text";
 import { ArrowLeftIcon, ExternalLinkIcon, SparkleIcon } from "@/components/icons";
 import FavoriteButton from "@/components/FavoriteButton";
+import WatchStatusPicker from "@/components/WatchStatusPicker";
 
 export const revalidate = 3600;
 
@@ -18,7 +19,7 @@ export async function generateMetadata(props: PageProps<"/anime/[id]">): Promise
   const { id } = await props.params;
   const anime = await loadAnime(id);
   return {
-    title: anime ? `${anime.title} — AniScreener` : "Anime not found — AniScreener",
+    title: anime ? `${anime.title} | AniScreener` : "Anime not found | AniScreener",
     description: anime?.description?.slice(0, 160),
   };
 }
@@ -111,6 +112,11 @@ export default async function AnimeDetailPage(props: PageProps<"/anime/[id]">) {
               View on AniList
               <ExternalLinkIcon className="h-3.5 w-3.5" />
             </a>
+
+            <div className="mt-5">
+              <p className="mb-2 text-xs uppercase tracking-wide text-muted">Your status</p>
+              <WatchStatusPicker anime={anime} />
+            </div>
           </div>
         </div>
 

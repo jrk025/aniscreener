@@ -1,6 +1,7 @@
 import type { AnimeSummary } from "@/lib/anilist";
 import { getFavorites, mergeFavorites } from "@/lib/favorites";
 import { getRecentSearches, mergeRecentSearches } from "@/lib/animeCache";
+import { getWatchList, mergeWatchList, type WatchListEntry } from "@/lib/watchStatus";
 
 const LAST_EXPORT_KEY = "aniscreener:last-export";
 const REMINDER_DISMISSED_KEY = "aniscreener:reminder-dismissed";
@@ -12,6 +13,7 @@ export interface BackupFile {
   exportedAt: string;
   favorites: AnimeSummary[];
   recentSearches: string[];
+  watchList?: WatchListEntry[];
 }
 
 export function buildBackup(): BackupFile {
@@ -21,6 +23,7 @@ export function buildBackup(): BackupFile {
     exportedAt: new Date().toISOString(),
     favorites: getFavorites(),
     recentSearches: getRecentSearches(),
+    watchList: getWatchList(),
   };
 }
 
@@ -58,6 +61,7 @@ export function isBackupFile(value: unknown): value is BackupFile {
 export function restoreBackup(data: BackupFile) {
   mergeFavorites(data.favorites);
   mergeRecentSearches(data.recentSearches ?? []);
+  mergeWatchList(data.watchList ?? []);
 }
 
 function getTimestamp(key: string): number | null {
@@ -78,7 +82,7 @@ export function dismissBackupReminder() {
 }
 
 export function shouldShowBackupReminder(): boolean {
-  if (getFavorites().length === 0) return false;
+  if (getFavorites().length === 0 && getWatchList().length === 0) return false;
 
   const lastExport = getTimestamp(LAST_EXPORT_KEY);
   if (lastExport && Date.now() - lastExport < REMINDER_INTERVAL_MS) return false;
